@@ -72,7 +72,7 @@ App = {
         let loader = $("#loader");
         let content = $("#content");
         let connectButton = $("#connect-button");
-        if (typeof App.account !== "undefined" && App.account !== null) {
+        if (typeof App.account !== "undefined" && App.account !== null && App.account !== "" && App.account.length >= 42) {
             connectButton.hide();
         } else {
             connectButton.show();
