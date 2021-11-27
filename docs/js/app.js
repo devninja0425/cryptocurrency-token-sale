@@ -27,6 +27,18 @@ App = {
         return App.initContracts();
     },
 
+    connectAccount: () => {
+        if (typeof ethereum !== "undefined") {
+            ethereum.request({method: "eth_requestAccounts"});
+        } else if (typeof web3 !== "undefined") {
+            try {
+                ethereum.enable();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+
     listenAccountChanges: () => {
         if (typeof ethereum !== "undefined") {
             ethereum.on("accountsChanged", (accounts) => {
@@ -59,6 +71,12 @@ App = {
     isLoading: () => {
         let loader = $("#loader");
         let content = $("#content");
+        let connectButton = $("#connect-button");
+        if (typeof App.account !== "undefined" && App.account !== null) {
+            connectButton.hide();
+        } else {
+            connectButton.show();
+        }
         if (App.loading) {
             loader.show();
             content.hide();
@@ -69,7 +87,6 @@ App = {
     },
 
     render: () => {
-        if (App.loading) return;
         App.loading = true;
         App.isLoading();
         web3.eth.getCoinbase(async (error, account) => {
@@ -82,26 +99,30 @@ App = {
     },
 
     successfulRender: async (account) => {
-        App.account = account;
-        $("#accountAddress").text(`Your Account: ${App.account}`);
+        if (typeof account !== "undefined" && account !== null) {
+            App.account = account;
+            $("#accountAddress").text(`Your Account: ${App.account}`);
 
-        App.accountBalance = (await App.deployedContracts.DappToken.balanceOf(App.account)).toNumber();
-        App.tokenPrice = (await App.deployedContracts.DappTokenSale.tokenPrice()).toNumber();
-        App.tokensSold = (await App.deployedContracts.DappTokenSale.tokensSold()).toNumber();
-        // App.tokensAvailable = await App.deployedContracts.DappTokenSale.tokensAvailable();
+            App.accountBalance = (await App.deployedContracts.DappToken.balanceOf(App.account)).toNumber();
+            App.tokenPrice = (await App.deployedContracts.DappTokenSale.tokenPrice()).toNumber();
+            App.tokensSold = (await App.deployedContracts.DappTokenSale.tokensSold()).toNumber();
+            // App.tokensAvailable = await App.deployedContracts.DappTokenSale.tokensAvailable();
 
-        let progressPercentage = (App.tokensSold / App.tokensAvailable * 100).toFixed(2);
+            let progressPercentage = (App.tokensSold / App.tokensAvailable * 100).toFixed(2);
 
-        $("#dapp-balance").text(App.accountBalance);
-        $("#token-price").text(web3.utils.fromWei(new web3.utils.BN(App.tokenPrice), "ether"));
-        $("#tokens-sold").text(App.tokensSold);
-        $("#tokens-available").text(App.tokensAvailable);
-        $("#progress").text(`${progressPercentage}%`);
-        $("#progress").css("width", `${progressPercentage}%`);
-        $("#progress").attr("aria-valuenow", `${progressPercentage}%`);
+            $("#dapp-balance").text(App.accountBalance);
+            $("#token-price").text(web3.utils.fromWei(new web3.utils.BN(App.tokenPrice), "ether"));
+            $("#tokens-sold").text(App.tokensSold);
+            $("#tokens-available").text(App.tokensAvailable);
+            $("#progress").text(`${progressPercentage}%`);
+            $("#progress").css("width", `${progressPercentage}%`);
+            $("#progress").attr("aria-valuenow", `${progressPercentage}%`);
 
-        App.loading = false;
-        App.isLoading();
+            App.loading = false;
+            App.isLoading();
+        } else {
+            return App.failedRender();
+        }
     },
 
     failedRender: () => {
