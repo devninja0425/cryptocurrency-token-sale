@@ -20,7 +20,7 @@ App = {
         } else if (typeof web3 !== "undefined") {
             App.web3Provider = web3.currentProvider;
         } else {
-            App.web3Provider = new Web3.providers.HttpProvider("http://localhost:7545");
+            App.web3Provider = new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/2b59e34d48bc41c9b1597fe719fcb196");
         }
         web3 = new Web3(App.web3Provider);
         App.listenAccountChanges();
