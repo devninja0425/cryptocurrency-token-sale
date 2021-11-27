@@ -1,0 +1,20 @@
+{
+  "name": "cryptocurrency-token-sale",
+  "version": "1.0.0",
+  "description": "Token Sale ICO",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "lite-server",
+    "test": "truffle test"
+  },
+  "author": "Crenata <havea.crenata@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@truffle/hdwallet-provider": "^1.7.0",
+    "dotenv": "^10.0.0",
+    "lite-server": "^2.6.1"
+  }
+}
